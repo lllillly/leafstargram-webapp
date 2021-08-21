@@ -18,10 +18,9 @@ const AppLayout = ({ children }) => {
       <main>
         <Row>
           <Col span={3}></Col>
-          <MainCol span={18}></MainCol>
+          <MainCol span={18}> {children}</MainCol>
           <Col span={3}></Col>
         </Row>
-        {children}
       </main>
     </div>
   );

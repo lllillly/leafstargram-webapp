@@ -27,6 +27,8 @@ function* login(action) {
     const dummyUser = {
       email: action.data.email,
       password: action.data.password,
+      followers: [{ id: 3 }, { id: 42 }, { id: 91 }, { id: 103 }],
+      followings: [{ id: 3 }, { id: 42 }, { id: 91 }, { id: 103 }],
     };
 
     yield put({
