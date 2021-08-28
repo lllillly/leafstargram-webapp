@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const hpp = require("hpp");
 const cors = require("cors");
 const db = require("./models");
+const userRouter = require("./routes/userRouter");
 
 db.sequelize
   .sync()
@@ -19,6 +20,9 @@ const app = express();
 const PORT = process.env.PORT;
 
 console.log(`⭐️⭐️⭐️ ${SERVER_MODE} ⭐️⭐️⭐️`);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // 14버전부터 가능
 
 if (SERVER_MODE === "development") {
   app.use(morgan(`dev`));
@@ -40,6 +44,8 @@ if (SERVER_MODE === "development") {
     })
   );
 }
+
+app.use("/api/user", userRouter);
 
 app.listen(PORT, () => {
   console.log(`Express Server Start With Mysql http://localhost:${PORT}`);
