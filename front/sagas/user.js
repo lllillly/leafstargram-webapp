@@ -1,56 +1,42 @@
-import {
-  all,
-  call,
-  fork,
-  put,
-  delay,
-  task,
-  takeLatest,
-} from "@redux-saga/core/effects";
+import { all, call, fork, put, delay, takeLatest } from "redux-saga/effects";
 import axios from "axios";
 import {
   LOG_IN_REQUEST,
   LOG_IN_SUCCESS,
   LOG_IN_FAILURE,
+  /////////////////
 } from "../reducers/user";
 
-// saga Action ///////////////////////////////
+// Saga Action/////////////////////////////
 function loginAPI(data) {
-  return axios.post("http://localhost:4000/user/login");
+  return axios.post("http://localhost:4000/api/user/signin", data);
 }
 
 function* login(action) {
   try {
-    // const result = yield call(loginAPI, action.data);
-
-    yield delay(1000);
-    const dummyUser = {
-      email: action.data.email,
-      password: action.data.password,
-      followers: [{ id: 3 }, { id: 42 }, { id: 91 }, { id: 103 }],
-      followings: [{ id: 3 }, { id: 42 }, { id: 91 }, { id: 103 }],
-    };
+    const result = yield call(loginAPI, action.data);
 
     yield put({
       type: LOG_IN_SUCCESS,
-      data: dummyUser,
-      // data: result.data,
+      data: result.data,
     });
   } catch (error) {
     console.error(error);
     yield put({
       type: LOG_IN_FAILURE,
-      data: error.result.data,
+      data: error.response.data,
     });
   }
 }
-//////////////////////////////////////////////
+///////////////////////////////////////////
 
-// watchFunction /////////////////////////////
+// watchFunction//////////////////////////
 function* watchLogin() {
   yield takeLatest(LOG_IN_REQUEST, login);
 }
 
 export default function* userSaga() {
-  yield all([fork(watchLogin)]);
+  yield all([
+    fork(watchLogin), //
+  ]);
 }

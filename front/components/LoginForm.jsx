@@ -1,7 +1,7 @@
-import React, { useCallback } from "react";
-import { Row, Col, Form, Input, Button } from "antd";
+import React, { useCallback, useEffect } from "react";
+import { Row, Col, Form, Input, Button, message } from "antd";
 import styled from "styled-components";
-import useInput from "./Hooks/useInput";
+import useInput from "./hooks/useInput";
 import { useDispatch, useSelector } from "react-redux";
 import { LOG_IN_REQUEST } from "../reducers/user";
 
@@ -37,17 +37,20 @@ const LoginImage = styled.img`
 `;
 
 const LoginForm = () => {
-  const { st_loginLoading } = useSelector((state) => state.user);
+  const { st_loginLoading, st_loginError } = useSelector((state) => state.user);
 
   const email = useInput(``);
   const password = useInput(``);
 
   const dispatch = useDispatch();
 
-  const onLoginSubmit = useCallback(() => {
-    console.log(email.value);
-    console.log(password.value);
+  useEffect(() => {
+    if (st_loginError) {
+      message.error(st_loginError);
+    }
+  }, [st_loginError]);
 
+  const onLoginSubmit = useCallback(() => {
     dispatch({
       type: LOG_IN_REQUEST,
       data: {
