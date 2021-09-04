@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
-const teaminfo = require("./teaminfo");
 const user = require("./user");
+const feed = require("./feed");
 
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -15,8 +15,8 @@ const sequelize = new Sequelize(
   config
 );
 
-db.TeamInfo = teaminfo;
 db.User = user;
+db.Feed = feed;
 
 Object.keys(db).forEach((modelName) => {
   db[modelName].init(sequelize);

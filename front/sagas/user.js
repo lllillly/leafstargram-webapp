@@ -5,11 +5,14 @@ import {
   LOG_IN_SUCCESS,
   LOG_IN_FAILURE,
   /////////////////
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_SUCCESS,
+  LOAD_MY_INFO_FAILURE,
 } from "../reducers/user";
 
 // Saga Action/////////////////////////////
 function loginAPI(data) {
-  return axios.post("http://localhost:4000/api/user/signin", data);
+  return axios.post("/api/user/signin", data);
 }
 
 function* login(action) {
@@ -28,6 +31,28 @@ function* login(action) {
     });
   }
 }
+
+function LoadMyInfoAPI(data) {
+  return axios.post("/api/user/loadMyInfo");
+}
+
+function* LoadMyInfo(action) {
+  try {
+    const result = yield call(LoadMyInfoAPI);
+
+    yield put({
+      type: LOAD_MY_INFO_SUCCESS,
+      data: result.data,
+    });
+  } catch (error) {
+    console.error(error);
+    yield put({
+      type: LOAD_MY_INFO_FAILURE,
+      data: error.response.data,
+    });
+  }
+}
+
 ///////////////////////////////////////////
 
 // watchFunction//////////////////////////
@@ -35,8 +60,13 @@ function* watchLogin() {
   yield takeLatest(LOG_IN_REQUEST, login);
 }
 
+function* watchLoadMyInfo() {
+  yield takeLatest(LOAD_MY_INFO_REQUEST, LoadMyInfo);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchLogin), //
+    fork(watchLoadMyInfo),
   ]);
 }

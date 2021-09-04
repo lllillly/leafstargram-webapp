@@ -63,9 +63,28 @@ router.post("/signin", (req, res, next) => {
         },
       });
 
+      // 유저가 피드를 가질 수 있는데, 나중에 피드도 같이 갖고오게 하는것.
       return res.status(200).json(withOutPasswordUser);
     });
-  })(req, res, next);
+  })(req, res, next); // 선언이 되면서 동시에 실행이 된다.
+});
+
+router.post("/loadMyInfo", async (req, res, next) => {
+  console.log(req.user.id);
+
+  try {
+    const loginUser = await User.findOne({
+      where: { id: req.user.id },
+      attributes: {
+        exclude: ["password"],
+      },
+    });
+
+    return res.status(200).json(loginUser);
+  } catch (error) {
+    console.error(error);
+    return res.status(400).send("로그인 유지를 실패하였습니다.");
+  }
 });
 
 // 함수 안에 콜백 안에 콜백 }) }) })

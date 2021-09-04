@@ -3,7 +3,7 @@ import { Row, Col, Form, Input, Button, message } from "antd";
 import styled from "styled-components";
 import useInput from "./hooks/useInput";
 import { useDispatch, useSelector } from "react-redux";
-import { LOG_IN_REQUEST } from "../reducers/user";
+import { LOAD_MY_INFO_REQUEST, LOG_IN_REQUEST } from "../reducers/user";
 
 const LoginRow = styled(Row)`
   display: flex;
@@ -43,6 +43,12 @@ const LoginForm = () => {
   const password = useInput(``);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch({
+      type: LOAD_MY_INFO_REQUEST,
+    });
+  }, []);
 
   useEffect(() => {
     if (st_loginError) {
