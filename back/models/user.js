@@ -11,7 +11,7 @@ module.exports = class User extends Model {
           unique: true,
         },
         password: {
-          type: DataTypes.STRING(100),
+          type: DataTypes.STRING(300),
           allowNull: false,
         },
         nickname: {
@@ -47,6 +47,7 @@ module.exports = class User extends Model {
       }
     );
   }
+
   static associate(db) {
     db.User.hasMany(db.Feed);
   }

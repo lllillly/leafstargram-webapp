@@ -9,19 +9,23 @@ module.exports = class Feed extends Model {
           type: DataTypes.STRING(200),
           allowNull: false,
         },
+
         content: {
           type: DataTypes.TEXT,
           allowNull: false,
         },
+
         imagePath: {
           type: DataTypes.STRING(500),
           allowNull: false,
         },
+
         isDelete: {
           type: DataTypes.BOOLEAN,
           allowNull: false,
           defaultValue: false,
         },
+
         deletedAt: {
           type: DataTypes.DATE,
           allowNull: true,

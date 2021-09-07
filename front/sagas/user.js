@@ -31,14 +31,16 @@ function* login(action) {
     });
   }
 }
+///////////////////////////////////////////
 
-function LoadMyInfoAPI(data) {
+// Saga Action/////////////////////////////
+function loadMyInfoAPI(data) {
   return axios.post("/api/user/loadMyInfo");
 }
 
-function* LoadMyInfo(action) {
+function* loadMyInfo(action) {
   try {
-    const result = yield call(LoadMyInfoAPI);
+    const result = yield call(loadMyInfoAPI);
 
     yield put({
       type: LOAD_MY_INFO_SUCCESS,
@@ -52,7 +54,6 @@ function* LoadMyInfo(action) {
     });
   }
 }
-
 ///////////////////////////////////////////
 
 // watchFunction//////////////////////////
@@ -61,12 +62,12 @@ function* watchLogin() {
 }
 
 function* watchLoadMyInfo() {
-  yield takeLatest(LOAD_MY_INFO_REQUEST, LoadMyInfo);
+  yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
 }
 
 export default function* userSaga() {
   yield all([
     fork(watchLogin), //
-    fork(watchLoadMyInfo),
+    fork(watchLoadMyInfo), //
   ]);
 }

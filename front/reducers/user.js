@@ -9,7 +9,7 @@ export const initailState = {
   //////////////////////
   st_loadMyInfoLoading: false,
   st_loadMyInfoDone: false,
-  st_loadMyInfoErr: false,
+  st_loadMyInfoErr: null,
 };
 
 export const LOG_IN_REQUEST = "LOG_IN_REQUEST";
@@ -44,6 +44,7 @@ const reducer = (state = initailState, action) =>
         break;
       }
       //////////////////////////////////////////
+
       case LOAD_MY_INFO_REQUEST: {
         draft.st_loadMyInfoLoading = true;
         draft.st_loadMyInfoDone = false;
@@ -64,6 +65,7 @@ const reducer = (state = initailState, action) =>
         draft.me = null;
         break;
       }
+      //////////////////////////////////////////
 
       default:
         break;

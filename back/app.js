@@ -6,11 +6,16 @@ const helmet = require("helmet");
 const hpp = require("hpp");
 const cors = require("cors");
 const db = require("./models");
-const userRouter = require("./routes/userRouter");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const passport = require("passport");
 const passportConfig = require("./passport");
+const path = require("path");
+const fs = require("fs");
+
+//
+const userRouter = require("./routes/userRouter");
+const feedRouter = require("./routes/feedRouter");
 passportConfig();
 
 db.sequelize
@@ -19,12 +24,18 @@ db.sequelize
     console.log("🍀 Mysql Database Connected");
   })
   .catch(console.error);
-
 const SERVER_MODE = process.env.NODE_ENV;
 const app = express();
 const PORT = process.env.PORT;
 
-console.log(`⭐️⭐️⭐️ ${SERVER_MODE} ⭐️⭐️⭐️`);
+console.log(`🍀🍀🍀🍀 ${SERVER_MODE} 🍀🍀🍀🍀`);
+
+try {
+  fs.accessSync("uploads");
+} catch (error) {
+  console.log("uploads 폴더가 없습니다. 새로 생성합니다.");
+  fs.mkdirSync("uploads");
+}
 
 if (SERVER_MODE === "development") {
   app.use(morgan(`dev`));
@@ -32,7 +43,6 @@ if (SERVER_MODE === "development") {
     cors({
       origin: ["http://localhost:3000"],
       credentials: true,
-      //main content setting 이라고 생각하면 됨.
     })
   );
 } else {
@@ -46,34 +56,29 @@ if (SERVER_MODE === "development") {
     })
   );
 }
-
-///////// 연결 //////////
-
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // 14버전부터 가능
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
   session({
-    saveUninitialized: false, // true로 하면 안됨!(다른 사람이 로그인하면 그 사람에게 다른 사람의 정보가 전달됨)
+    saveUninitialized: false,
     resave: false,
     secret: process.env.COOKIE_SECRET,
     proxy: true,
     cookie: {
-      httpOnly: true, // : 네트워크끼리만 통신하겠다는 뜻
+      httpOnly: true,
       secure: false,
       domain: process.env.NODE_ENV === "production" && ".realdomain.com",
     },
   })
 );
-
-///////// 감싸기 /////////
-
 app.use(passport.initialize());
 app.use(passport.session());
 
-////////////////////////
-
 app.use("/api/user", userRouter);
+app.use("/api/feed", feedRouter);
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.listen(PORT, () => {
   console.log(`Express Server Start With Mysql http://localhost:${PORT}`);
