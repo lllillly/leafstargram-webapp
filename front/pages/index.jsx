@@ -1,15 +1,29 @@
 import AppLayout from "../components/AppLayouts";
 import FeedWForm from "../components/FeedForm";
 import LoginForm from "../components/LoginForm";
+import FeedCreate from "../components/FeedCreate";
 import { useSelector } from "react-redux";
 import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
 import axios from "axios";
 import wrapper from "../store/configureStore";
 import { END } from "redux-saga";
+
 const Home = () => {
   const { me } = useSelector((state) => state.user);
-  return <AppLayout>{me ? <FeedWForm /> : <LoginForm />}</AppLayout>;
+  return (
+    <AppLayout>
+      {me ? (
+        <>
+          <FeedCreate />
+          <FeedWForm />
+        </>
+      ) : (
+        <LoginForm />
+      )}
+    </AppLayout>
+  );
 };
+
 export const getServerSideProps = wrapper.getServerSideProps(
   async (context) => {
     // SSR Cookie Settings For Data Load/////////////////////////////////////
