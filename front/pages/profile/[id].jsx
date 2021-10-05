@@ -7,6 +7,11 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
+import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
+import axios from "axios";
+import wrapper from "../../store/configureStore";
+import { END } from "redux-saga";
 
 const { Meta } = Card;
 
@@ -18,12 +23,11 @@ const RowCustom = styled(Row)`
   margin-top: 70px;
 `;
 
-const FeedImage = styled.img`
+const FeedImg = styled.img`
   width: 100%;
   height: auto;
   object-fit: cover;
   transition: 0.5s;
-
   &:hover {
     opacity: 0.7;
   }
@@ -33,7 +37,6 @@ const Wrapper = styled.div`
   width: 100%;
   height: 40px;
   margin: 15px 0;
-
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -47,31 +50,24 @@ const FollowBox = styled.div`
   padding: 3px 10px;
   border: 1px solid #eaeaea;
   border-radius: 5px;
-
+  cursor: pointer;
   transition: 0.5s;
-
   &:hover {
     box-shadow: 0px 0px 7px #919191;
   }
 `;
 
 const Profile = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const { me } = useSelector((state) => state.user);
 
   const loadingCompleted = useCallback(() => {
     setLoading((prevState) => !prevState);
   }, [loading]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      loadingCompleted();
-    }, 1000);
-  }, []);
-
   return (
     <AppLayout>
-      {/* <Switch checked={!loading} onChange={loadingCompleted}></Switch> */}
-
       <CardCustom
         actions={[
           <SettingOutlined key="setting" />,
@@ -84,38 +80,54 @@ const Profile = () => {
             avatar={
               <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
             }
-            title="Card title"
-            description="This is the description"
+            title={me.nickname}
+            description="Status Message"
           />
         </Skeleton>
       </CardCustom>
-      <Wrapper>
-        <FollowBox>Follower 42</FollowBox>
-        <FollowBox>Following 13</FollowBox>
-      </Wrapper>
-      <RowCustom gutter={[15, 15]}>
-        <Col span={8}>
-          <FeedImage src="https://picsum.photos/300/301" alt="feed" />
-        </Col>
-        <Col span={8}>
-          <FeedImage src="https://picsum.photos/301/300" alt="feed" />
-        </Col>
-        <Col span={8}>
-          <FeedImage src="https://picsum.photos/300/302" alt="feed" />
-        </Col>
 
-        <Col span={8}>
-          <FeedImage src="https://picsum.photos/302/300" alt="feed" />
-        </Col>
-        <Col span={8}>
-          <FeedImage src="https://picsum.photos/303/300" alt="feed" />
-        </Col>
-        <Col span={8}>
-          <FeedImage src="https://picsum.photos/300/303" alt="feed" />
-        </Col>
+      <Wrapper>
+        <FollowBox> Follower 42 </FollowBox>
+        <FollowBox> Following 13</FollowBox>
+      </Wrapper>
+
+      <RowCustom gutter={[15, 15]}>
+        {me &&
+          me.Feeds.map((data) => {
+            return (
+              <Col span={8}>
+                <FeedImg
+                  src={`http://localhost:4000/${data.imagePath}`}
+                  alt="feed"
+                />
+              </Col>
+            );
+          })}
       </RowCustom>
     </AppLayout>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  async (context) => {
+    // SSR Cookie Settings For Data Load/////////////////////////////////////
+    const cookie = context.req ? context.req.headers.cookie : "";
+    axios.defaults.headers.Cookie = "";
+    if (context.req && cookie) {
+      axios.defaults.headers.Cookie = cookie;
+    }
+    ////////////////////////////////////////////////////////////////////////
+    // 구현부
+
+    context.store.dispatch({
+      type: LOAD_MY_INFO_REQUEST,
+    });
+
+    // 구현부 종료
+    context.store.dispatch(END);
+    console.log("🍀 SERVER SIDE PROPS END");
+    await context.store.sagaTask.toPromise();
+  }
+);
 
 export default Profile;

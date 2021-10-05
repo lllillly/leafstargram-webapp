@@ -8,6 +8,10 @@ import {
   LOAD_MY_INFO_REQUEST,
   LOAD_MY_INFO_SUCCESS,
   LOAD_MY_INFO_FAILURE,
+  /////////////////
+  SIGN_UP_REQUEST,
+  SIGN_UP_SUCCESS,
+  SIGN_UP_FAILURE,
 } from "../reducers/user";
 
 // Saga Action/////////////////////////////
@@ -56,6 +60,29 @@ function* loadMyInfo(action) {
 }
 ///////////////////////////////////////////
 
+// Saga Action/////////////////////////////
+function signUpAPI(data) {
+  return axios.post("/api/user/signup", data);
+}
+
+function* signUp(action) {
+  try {
+    const result = yield call(signUpAPI, action.data);
+
+    yield put({
+      type: SIGN_UP_SUCCESS,
+      data: result.data,
+    });
+  } catch (error) {
+    console.error(error);
+    yield put({
+      type: SIGN_UP_FAILURE,
+      data: error.response.data,
+    });
+  }
+}
+///////////////////////////////////////////
+
 // watchFunction//////////////////////////
 function* watchLogin() {
   yield takeLatest(LOG_IN_REQUEST, login);
@@ -65,9 +92,14 @@ function* watchLoadMyInfo() {
   yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
 }
 
+function* watchSignUp() {
+  yield takeLatest(SIGN_UP_REQUEST, signUp);
+}
+
 export default function* userSaga() {
   yield all([
     fork(watchLogin), //
     fork(watchLoadMyInfo), //
+    fork(watchSignUp), //
   ]);
 }

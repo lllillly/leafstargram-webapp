@@ -1,6 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const { User } = require("../models");
+const { User, Feed } = require("../models");
 const passport = require("passport");
 
 const router = express.Router();
@@ -58,6 +58,11 @@ router.post("/signin", (req, res, next) => {
         attributes: {
           exclude: ["password"],
         },
+        include: [
+          {
+            model: Feed,
+          },
+        ],
       });
 
       return res.status(200).json(withOutPasswordUser);
@@ -72,6 +77,11 @@ router.post("/loadMyInfo", async (req, res, next) => {
       attributes: {
         exclude: ["password"],
       },
+      include: [
+        {
+          model: Feed,
+        },
+      ],
     });
 
     return res.status(200).json(loginUser);

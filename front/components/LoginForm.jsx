@@ -3,7 +3,8 @@ import { Row, Col, Form, Input, Button, message } from "antd";
 import styled from "styled-components";
 import useInput from "./hooks/useInput";
 import { useDispatch, useSelector } from "react-redux";
-import { LOAD_MY_INFO_REQUEST, LOG_IN_REQUEST } from "../reducers/user";
+import { LOG_IN_REQUEST } from "../reducers/user";
+import { useRouter } from "next/router";
 
 const LoginRow = styled(Row)`
   display: flex;
@@ -15,12 +16,10 @@ const LoginRow = styled(Row)`
 
 const LoginWrapper = styled(Col)`
   height: 500px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   border-radius: 4px;
   border: 1px solid #ebebeb;
 `;
@@ -30,7 +29,6 @@ const LoginImage = styled.img`
   height: 100%;
   object-fit: cover;
   transition: 0.4s;
-
   &:hover {
     opacity: 0.6;
   }
@@ -43,18 +41,17 @@ const LoginForm = () => {
   const password = useInput(``);
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch({
-      type: LOAD_MY_INFO_REQUEST,
-    });
-  }, []);
+  const router = useRouter();
 
   useEffect(() => {
     if (st_loginError) {
       message.error(st_loginError);
     }
   }, [st_loginError]);
+
+  const goJoinUs = () => {
+    router.push("/joinus");
+  };
 
   const onLoginSubmit = useCallback(() => {
     dispatch({
@@ -94,6 +91,10 @@ const LoginForm = () => {
 
           <Button type="primary" htmlType="submit" loading={st_loginLoading}>
             LOG IN
+          </Button>
+
+          <Button type="default" onClick={() => goJoinUs()}>
+            JOIN US
           </Button>
         </Form>
       </LoginWrapper>
